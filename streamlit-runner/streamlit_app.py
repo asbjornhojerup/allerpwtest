@@ -2,6 +2,8 @@ import streamlit as st
 import subprocess
 from pathlib import Path
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 # Get paths
 project_root = Path(__file__).parent.parent
@@ -23,77 +25,94 @@ st.markdown("Select parameters and run E2E tests")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    # allow single or multiple sites
-    site = st.multiselect("Website", sites, default=sites[0])
+    selected_sites = st.multiselect("Website", sites, default=[sites[0]] if sites else [])
 with col2:
-    env = st.multiselect("Environment", envs, default=envs[0])
+    selected_envs = st.multiselect("Environment", envs, default=[envs[0]] if envs else [])
 with col3:
-    plat = st.multiselect("Platform", plats, default=plats[0])
+    selected_plats = st.multiselect("Platform", plats, default=[plats[0]] if plats else [])
 
-run_button = st.button("▶️ Run Test", use_container_width=True)
-
-# option to run in parallel if multiple sites selected
-parallel = st.checkbox("Run tests concurrently (multi-worker)", value=False)
+run_button = st.button("▶️ Run Tests", use_container_width=True)
 
 if run_button:
-    # support running multiple sites at once
-    selected_sites = site if isinstance(site, list) else [site]
-    selected_envs = env if isinstance(env, list) else [env]
-    selected_plats = plat if isinstance(plat, list) else [plat]
-
-    def run_test(s: str, e: str, p: str) -> tuple[str, str, int]:
-        """Invoke playwright for a single test combination and return (name, output, returncode)."""
-        test_name = f"{s}{e}.{p}.test.ts"
-        test_file = tests_dir / test_name
-        if not test_file.exists():
-            return (test_name, f"❌ Test file not found", -1)
-        cmd = ["npx", "playwright", "test", test_name]
-        proc = subprocess.run(
-            cmd,
-            cwd=str(tests_dir),
-            capture_output=True,
-            text=True,
-            timeout=300
-        )
-        return (test_name, proc.stdout + proc.stderr, proc.returncode)
-
-    # build list of all combinations
-    combos = [(s, e, p) for s in selected_sites for e in selected_envs for p in selected_plats]
-
-    def run_combo(args):
-        s, e, p = args
-        return run_test(s, e, p)
-
-    if parallel and len(combos) > 1:
-        from concurrent.futures import ThreadPoolExecutor, as_completed
-        futures = []
-        with ThreadPoolExecutor(max_workers=len(combos)) as exec:
-            for combo in combos:
-                futures.append(exec.submit(run_combo, combo))
-
-            for fut in as_completed(futures):
-                test_name, output, code = fut.result()
-                if code == -1:
-                    st.error(f"❌ {test_name} not found")
-                    continue
-                if code == 0:
-                    st.success(f"✅ {test_name} passed!")
-                else:
-                    st.error(f"❌ {test_name} failed (code {code})")
-                st.subheader(f"Output for {test_name}")
-                st.code(output, language="text")
+    if not selected_sites or not selected_envs or not selected_plats:
+        st.error("❌ Please select at least one option for each parameter")
     else:
-        for combo in combos:
-            test_name, output, code = run_combo(combo)
-            if code == -1:
-                st.error(f"❌ {test_name} not found")
-                continue
-            if code == 0:
-                st.success(f"✅ {test_name} passed!")
-            else:
-                st.error(f"❌ {test_name} failed (code {code})")
-            st.subheader(f"Output for {test_name}")
-            st.code(output, language="text")
+        # Generate all combinations
+        test_combinations = []
+        for site in selected_sites:
+            for env in selected_envs:
+                for plat in selected_plats:
+                    test_name = f"{site}{env}.{plat}.test.ts"
+                    test_file = tests_dir / test_name
+                    if test_file.exists():
+                        test_combinations.append(test_name)
+                    else:
+                        st.warning(f"⚠️ Test file not found: {test_name}")
+        
+        if test_combinations:
+            st.info(f"Running {len(test_combinations)} test(s) simultaneously...")
+            
+            # Function to run a single test
+            def run_single_test(test_name):
+                try:
+                    cmd = ["npx", "playwright", "test", test_name]
+                    result = subprocess.run(
+                        cmd,
+                        cwd=str(tests_dir),
+                        capture_output=True,
+                        text=True,
+                        timeout=300
+                    )
+                    return {
+                        "test": test_name,
+                        "returncode": result.returncode,
+                        "stdout": result.stdout,
+                        "stderr": result.stderr
+                    }
+                except subprocess.TimeoutExpired:
+                    return {
+                        "test": test_name,
+                        "returncode": -1,
+                        "stdout": "",
+                        "stderr": "Test execution timed out (5 minutes)"
+                    }
+                except Exception as e:
+                    return {
+                        "test": test_name,
+                        "returncode": -1,
+                        "stdout": "",
+                        "stderr": str(e)
+                    }
+            
+            with st.spinner("Executing tests..."):
+                # Run tests concurrently
+                results = []
+                with ThreadPoolExecutor(max_workers=4) as executor:
+                    futures = {executor.submit(run_single_test, test): test for test in test_combinations}
+                    for future in as_completed(futures):
+                        results.append(future.result())
+            
+            # Display results
+            passed_count = sum(1 for r in results if r["returncode"] == 0)
+            failed_count = len(results) - passed_count
+            
+            st.subheader(f"Results: {passed_count} passed, {failed_count} failed")
+            
+            # Show results in tabs
+            if passed_count > 0:
+                with st.expander(f"✅ Passed Tests ({passed_count})", expanded=True):
+                    for result in results:
+                        if result["returncode"] == 0:
+                            st.success(result["test"])
+                            st.code(result["stdout"], language="text")
+            
+            if failed_count > 0:
+                with st.expander(f"❌ Failed Tests ({failed_count})", expanded=True):
+                    for result in results:
+                        if result["returncode"] != 0:
+                            st.error(result["test"])
+                            output = result["stdout"] + result["stderr"]
+                            st.code(output if output else "No output captured", language="text")
 
 st.divider()
 st.markdown("### Available Tests")

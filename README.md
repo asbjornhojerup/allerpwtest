@@ -1,2 +1,0 @@
-# allerpwtest
-playwright testing @aller

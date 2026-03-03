@@ -1,17 +1,23 @@
 {
-  "name": "pw-fifa",
+  "name": "allerpwtest",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/asbjornhojerup/allerpwtest.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@playwright/test": "^1.47.2",
-    "@types/node": "^20.11.19"
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/asbjornhojerup/allerpwtest/issues"
   },
-  "dependencies": {
-    "playwright": "^1.47.2"
+  "homepage": "https://github.com/asbjornhojerup/allerpwtest#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.3"
   }
 }
