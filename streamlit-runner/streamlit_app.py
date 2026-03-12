@@ -4,10 +4,21 @@ from pathlib import Path
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
+import shutil
 
-# Get paths
-project_root = Path(__file__).parent.parent
+# Get paths - handle both local and cloud deployments
+script_dir = Path(__file__).parent
+project_root = script_dir.parent
 tests_dir = project_root / "tests"
+
+# Fallback for cloud deployments where structure might differ
+if not tests_dir.exists():
+    # Try looking for tests in parent directory
+    tests_dir = Path(__file__).parent.parent.parent / "tests"
+    
+if not tests_dir.exists():
+    # Try current working directory
+    tests_dir = Path.cwd() / "tests"
 
 # Parse test files to extract site/env/platform combinations
 test_files = sorted([f.name for f in tests_dir.glob("*.test.ts")])
@@ -21,6 +32,36 @@ st.set_page_config(page_title="Playwright Test Runner", layout="wide")
 
 st.title("🎭 Playwright Test Runner")
 st.markdown("Select parameters and run E2E tests")
+
+# Check if npx is available
+npx_available = shutil.which("npx") is not None
+
+if not npx_available:
+    st.error("""
+    ❌ **Node.js/npm is not available in this environment**
+    
+    This app requires `npx` to run Playwright tests. 
+    
+    **To use this app:**
+    - Run it **locally** on your machine with: `/usr/bin/python3 -m streamlit run streamlit_app.py`
+    - This app cannot run on Streamlit Cloud since it doesn't support Node.js
+    
+    **If you want to run tests in the cloud, you have these options:**
+    1. Convert tests to Python using Playwright Python library
+    2. Deploy a separate Node.js backend service to run the tests
+    3. Use the app locally only
+    """)
+    st.stop()
+
+# Debug info (can be removed later)
+with st.expander("Debug Info", expanded=False):
+    st.write(f"Script location: {Path(__file__)}")
+    st.write(f"Tests directory: {tests_dir}")
+    st.write(f"Tests directory exists: {tests_dir.exists()}")
+    if tests_dir.exists():
+        st.write(f"Tests found: {len(test_files)}")
+    else:
+        st.error(f"⚠️ Tests directory not found at: {tests_dir}")
 
 col1, col2, col3 = st.columns(3)
 
