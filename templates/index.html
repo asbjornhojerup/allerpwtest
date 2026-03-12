@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Playwright Test Runner</title>
+    <style>
+      body { font-family: sans-serif; margin: 2rem; background-color: #f5f5f5; }
+      .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+      h1 { color: #333; text-align: center; }
+      .form-group { margin-bottom: 1.5rem; }
+      label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #555; }
+      select { width: 100%; padding: 0.75rem; font-size: 1rem; border: 1px solid #ddd; border-radius: 4px; }
+      select[multiple] { min-height: 100px; }
+      .checkbox-group { margin-bottom: 1.5rem; }
+      .checkbox-group label { display: inline-block; margin-right: 1rem; margin-bottom: 0.5rem; font-weight: normal; }
+      .checkbox-group input[type="checkbox"] { margin-right: 0.5rem; }
+      button { width: 100%; padding: 0.75rem; font-size: 1rem; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+      button:hover { background-color: #0056b3; }
+      .errors { color: red; margin-bottom: 1rem; padding: 1rem; background-color: #ffe6e6; border-radius: 4px; }
+      .results { margin-top: 2rem; }
+      .result-item { margin-bottom: 1rem; padding: 1rem; border-left: 4px solid #ddd; background-color: #f9f9f9; }
+      .result-item.passed { border-left-color: #28a745; }
+      .result-item.failed { border-left-color: #dc3545; }
+      .result-title { font-weight: bold; margin-bottom: 0.5rem; }
+      .result-title.passed { color: #28a745; }
+      .result-title.failed { color: #dc3545; }
+      pre { background-color: #f5f5f5; padding: 1rem; overflow-x: auto; border-radius: 4px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+<h1>🎭 Playwright Test Runner</h1>
+
+{% if errors %}
+  <div class="errors">
+    <strong>Errors:</strong>
+    <ul>
+    {% for e in errors %}
+      <li>{{ e }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+<form method="post">
+  <div class="form-group">
+    <label for="site">Sites (hold Ctrl/Cmd to select multiple)</label>
+    <select id="site" name="site" multiple required>
+      {% for site in sites %}
+        <option value="{{site}}">{{site}}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="checkbox-group">
+    <label style="display: block; font-weight: bold; margin-bottom: 0.75rem;">Environments</label>
+    {% for env in envs %}
+      <label><input type="checkbox" name="env" value="{{env}}"> {{env}}</label>
+    {% endfor %}
+  </div>
+
+  <div class="checkbox-group">
+    <label style="display: block; font-weight: bold; margin-bottom: 0.75rem;">Platforms</label>
+    {% for plat in plats %}
+      <label><input type="checkbox" name="plat" value="{{plat}}"> {{plat}}</label>
+    {% endfor %}
+  </div>
+
+  <button type="submit">▶️ Run Tests</button>
+</form>
+
+{% if results %}
+  <div class="results">
+    <h2>Results ({{ results|length }})</h2>
+    {% for r in results %}
+      <div class="result-item {% if r.returncode==0 %}passed{% else %}failed{% endif %}">
+        <div class="result-title {% if r.returncode==0 %}passed{% else %}failed{% endif %}">
+          {{ r.test }} - {% if r.returncode==0 %}✅ PASSED{% else %}❌ FAILED{% endif %}
+        </div>
+        <pre>{{ r.stdout }}{{ r.stderr }}</pre>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+</div>
+</body>
+</html>

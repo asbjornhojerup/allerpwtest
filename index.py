@@ -1,7 +1,6 @@
-"""Convenience entry point for the Streamlit runner.
+"""Entry point for the Playwright Test Runner web application.
 
-Running this module will start the Streamlit application located in
-`streamlit-runner/streamlit_app.py`.
+Running this module will start the Flask web server.
 
 Usage:
 
@@ -9,31 +8,26 @@ Usage:
 python index.py
 ```
 
-or, if the venv is activated:
+or:
 
 ```bash
-streamlit run index.py
+flask run --app web_app
 ```
 """
 
-import subprocess
+import os
 import sys
-from pathlib import Path
 
-# determine path to the streamlit app
-app_path = Path(__file__).parent / "streamlit-runner" / "streamlit_app.py"
+# when the module is executed directly, run the flask web app
 
-if not app_path.exists():
-    sys.exit(f"Streamlit app not found at {app_path}")
-
-# when the module is executed directly, hand off to streamlit
 def main() -> None:
-    # use the same python executable to invoke streamlit
-    cmd = [sys.executable, "-m", "streamlit", "run", str(app_path)]
+    # delegate to the Flask app if it exists
     try:
-        subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError as exc:
-        sys.exit(f"Streamlit failed with exit code {exc.returncode}")
+        import web_app
+        port = int(os.environ.get("PORT", 8000))
+        web_app.app.run(host="0.0.0.0", port=port, debug=True)
+    except ImportError:
+        sys.exit("web_app module not found; cannot start web server")
 
 
 if __name__ == "__main__":

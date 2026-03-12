@@ -29,8 +29,10 @@ Run Playwright tests:
 npx playwright test
 ```
 
-Run the Streamlit app:
+Run the Flask web app:
 
 ```bash
-streamlit run streamlit-runner/streamlit_app.py
+python index.py
+# or
+flask run --app web_app
 ```
