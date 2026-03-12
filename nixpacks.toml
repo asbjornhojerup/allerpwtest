@@ -1,0 +1,9 @@
+[build]
+# Include both Python and Node.js in the build environment
+providers = ["python", "nodejs"]
+
+[[providers]]
+name = "python"
+
+[[providers]]
+name = "nodejs"
