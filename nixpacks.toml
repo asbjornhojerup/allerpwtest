@@ -1,4 +1,3 @@
-# Configure Railway to build with both Node.js and Python
-[providers]
-# Explicitly specify we want both providers in order
+# Tell Nixpacks to set up Node.js and Python environments
+# Node.js version is specified in .node-version
 providers = ["nodejs", "python"]
