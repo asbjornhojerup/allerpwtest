@@ -1,9 +1,4 @@
-[build]
-# Include both Python and Node.js in the build environment
-providers = ["python", "nodejs"]
-
-[[providers]]
-name = "python"
-
-[[providers]]
-name = "nodejs"
+# Configure Railway to build with both Node.js and Python
+[providers]
+# Explicitly specify we want both providers in order
+providers = ["nodejs", "python"]
