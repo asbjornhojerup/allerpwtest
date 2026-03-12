@@ -2,7 +2,10 @@
 set -e
 
 echo "Installing Node.js dependencies..."
-npm install --prefer-offline --no-audit
+npm ci
+
+echo "Installing Playwright browsers..."
+npx playwright install --with-deps chromium
 
 echo "Installing Python dependencies..."
 pip install -r requirements.txt
