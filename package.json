@@ -3,21 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/asbjornhojerup/allerpwtest.git"
+  "scripts": {
+    "test": "playwright test",
+    "postinstall": "playwright install"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/asbjornhojerup/allerpwtest/issues"
-  },
-  "homepage": "https://github.com/asbjornhojerup/allerpwtest#readme",
   "devDependencies": {
-    "@playwright/test": "^1.45.1",
+    "@playwright/test": "1.45.1",
+    "playwright": "1.45.1",
     "@types/node": "^25.3.3"
   }
 }
