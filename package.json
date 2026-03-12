@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test",
-    "postinstall": "playwright install --with-deps"
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@playwright/test": "1.40.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.40.0",
-    "playwright": "1.40.0",
     "@types/node": "^25.3.3"
   }
 }
