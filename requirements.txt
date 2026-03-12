@@ -1,0 +1,8 @@
+# requirements for deployment (Python dependencies)
+# include same packages as streamlit-runner/requirements.txt
+
+streamlit==1.28.1
+subprocess32==3.5.4
+playwright==1.45.1
+pytest==8.3.3
+pytest-playwright==0.5.1
