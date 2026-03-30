@@ -48,23 +48,22 @@ def index():
     results = None
     errors = []
     if request.method == "POST":
-        selected_sites = request.form.getlist("site")
+        selected_site = request.form.get("site", "").strip()
         selected_envs = request.form.getlist("env")
         selected_plats = request.form.getlist("plat")
         
-        if not (selected_sites and selected_envs and selected_plats):
-            errors.append("You must select at least one site, environment, and platform")
+        if not (selected_site and selected_envs and selected_plats):
+            errors.append("You must select a site and at least one environment and platform")
         else:
             combos = []
-            for site in selected_sites:
-                for env in selected_envs:
-                    for plat in selected_plats:
-                        test_name = f"{site}{env}.{plat}.test.ts"
-                        test_file = tests_dir / test_name
-                        if test_file.exists():
-                            combos.append(test_name)
-                        else:
-                            errors.append(f"Test not found: {test_name}")
+            for env in selected_envs:
+                for plat in selected_plats:
+                    test_name = f"{selected_site}{env}.{plat}.test.ts"
+                    test_file = tests_dir / test_name
+                    if test_file.exists():
+                        combos.append(test_name)
+                    else:
+                        errors.append(f"Test not found: {test_name}")
             
             if combos:
                 results = []
