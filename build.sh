@@ -1,15 +1,17 @@
 #!/bin/bash
 set -e
 
-echo "Cleaning old node_modules and npm cache..."
+echo "Cleaning old node_modules..."
 rm -rf node_modules
-npm cache clean --force
 
 echo "Installing Node.js dependencies from lock file..."
-npm ci
+npm ci --include=dev
+
+echo "Verifying playwright-core installation..."
+ls node_modules/playwright-core/lib/server/utils/debugLogger.js && echo "debugLogger OK" || echo "WARNING: debugLogger MISSING"
 
 echo "Installing Playwright browsers..."
-npx playwright install --with-deps chromium
+node_modules/.bin/playwright install --with-deps chromium
 
 echo "Installing Python dependencies..."
 pip install -r requirements.txt
