@@ -1,2 +1,1 @@
-release: bash build.sh
-web: python index.py
+web: bash build.sh && python index.py
