@@ -25,7 +25,8 @@ def run_single_test(tests_dir, test_name):
     try:
         project_root = Path(__file__).parent
         playwright_bin = project_root / "node_modules" / ".bin" / "playwright"
-        cmd = [str(playwright_bin), "test", str(tests_dir / test_name)]
+        cmd = [str(playwright_bin), "test", str(tests_dir / test_name),
+               "--project=chromium", "--workers=2"]
         result = subprocess.run(
             cmd,
             cwd=str(project_root),
