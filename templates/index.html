@@ -14,8 +14,11 @@
       .checkbox-group { margin-bottom: 1.5rem; }
       .checkbox-group label { display: inline-block; margin-right: 1rem; margin-bottom: 0.5rem; font-weight: normal; }
       .checkbox-group input[type="checkbox"] { margin-right: 0.5rem; }
-      button { width: 100%; padding: 0.75rem; font-size: 1rem; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-      button:hover { background-color: #0056b3; }
+      button { width: 100%; padding: 0.75rem; font-size: 1rem; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.05em; transition: background-color 0.2s; }
+      button:hover:not(:disabled) { background-color: #0056b3; }
+      button:disabled { background-color: #0056b3; cursor: not-allowed; }
+      @keyframes ellipsis { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+      button.loading::after { content: '.'; animation: ellipsis 1.2s steps(1) infinite; }
       .errors { color: red; margin-bottom: 1rem; padding: 1rem; background-color: #ffe6e6; border-radius: 4px; }
       .results { margin-top: 2rem; }
       .result-item { margin-bottom: 1rem; padding: 1rem; border-left: 4px solid #ddd; background-color: #f9f9f9; }
@@ -24,7 +27,14 @@
       .result-title { font-weight: bold; margin-bottom: 0.5rem; }
       .result-title.passed { color: #28a745; }
       .result-title.failed { color: #dc3545; }
-      pre { background-color: #f5f5f5; padding: 1rem; overflow-x: auto; border-radius: 4px; font-size: 0.85rem; }
+      .test-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid #eee; font-size: 0.95rem; }
+      .test-row:last-child { border-bottom: none; }
+      .badge { font-weight: bold; white-space: nowrap; margin-left: 1rem; }
+      .badge.passed { color: #28a745; }
+      .badge.failed { color: #dc3545; }
+      details { margin-top: 0.4rem; }
+      details summary { font-size: 0.8rem; color: #888; cursor: pointer; }
+      details pre { margin: 0.4rem 0 0; background: #fff0f0; border: 1px solid #f5c6cb; padding: 0.75rem; border-radius: 4px; font-size: 0.8rem; white-space: pre-wrap; word-break: break-word; }
     </style>
 </head>
 <body>
@@ -66,8 +76,16 @@
     {% endfor %}
   </div>
 
-  <button type="submit">▶️ Run Tests</button>
+  <button type="submit" id="run-btn">Run Tests</button>
 </form>
+<script>
+  document.querySelector('form').addEventListener('submit', function() {
+    const btn = document.getElementById('run-btn');
+    btn.textContent = 'TESTING';
+    btn.classList.add('loading');
+    btn.disabled = true;
+  });
+</script>
 
 {% if results %}
   <div class="results">
@@ -75,9 +93,26 @@
     {% for r in results %}
       <div class="result-item {% if r.returncode==0 %}passed{% else %}failed{% endif %}">
         <div class="result-title {% if r.returncode==0 %}passed{% else %}failed{% endif %}">
-          {{ r.test }} - {% if r.returncode==0 %}✅ PASSED{% else %}❌ FAILED{% endif %}
+          {{ r.test }}
         </div>
-        <pre>{{ r.stdout }}{{ r.stderr }}</pre>
+        {% for t in r.tests %}
+          <div class="test-row">
+            <div style="flex:1">
+              <div style="display:flex; justify-content:space-between;">
+                <span>{{ t.title }}</span>
+                <span class="badge {% if t.ok %}passed{% else %}failed{% endif %}">
+                  {% if t.ok %}✅ passed{% else %}❌ failed{% endif %}
+                </span>
+              </div>
+              {% if not t.ok and t.error %}
+                <details>
+                  <summary>Show error</summary>
+                  <pre>{{ t.error }}</pre>
+                </details>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
       </div>
     {% endfor %}
   </div>

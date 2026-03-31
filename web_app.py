@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 import subprocess
 from pathlib import Path
 import os
+import json
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import shutil
 
@@ -26,7 +28,7 @@ def run_single_test(tests_dir, test_name):
         project_root = Path(__file__).parent
         playwright_bin = project_root / "node_modules" / ".bin" / "playwright"
         cmd = [str(playwright_bin), "test", str(tests_dir / test_name),
-               "--project=chromium", "--workers=2"]
+               "--project=chromium", "--workers=2", "--reporter=json"]
         result = subprocess.run(
             cmd,
             cwd=str(project_root),
@@ -34,8 +36,29 @@ def run_single_test(tests_dir, test_name):
             text=True,
             timeout=300
         )
-        return {"test": test_name, "returncode": result.returncode,
-                "stdout": result.stdout, "stderr": result.stderr}
+        tests = []
+        try:
+            data = json.loads(result.stdout)
+            ansi_escape = re.compile(r'\x1b\[[0-9;]*m')
+            def walk(suites):
+                for s in suites:
+                    for spec in s.get("specs", []):
+                        error = None
+                        if not spec["ok"]:
+                            for t in spec.get("tests", []):
+                                for r in t.get("results", []):
+                                    msg = (r.get("error") or {}).get("message", "")
+                                    if msg:
+                                        error = ansi_escape.sub("", msg)
+                                        break
+                                if error:
+                                    break
+                        tests.append({"title": spec["title"], "ok": spec["ok"], "error": error})
+                    walk(s.get("suites", []))
+            walk(data.get("suites", []))
+        except (json.JSONDecodeError, KeyError):
+            pass
+        return {"test": test_name, "returncode": result.returncode, "tests": tests}
     except subprocess.TimeoutExpired:
         return {"test": test_name, "returncode": -1, "stdout": "", "stderr": "Timeout"}
     except Exception as e:
