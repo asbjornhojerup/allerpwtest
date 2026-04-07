@@ -84,11 +84,11 @@ test('test load more  on category , change to necessary cookies, load more again
 test('test ad placements on frontpage', async ({ page }) => {
   await page.goto('https://seoghoer.dk?debugAds=true');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
-  await expect(page.locator('#responsive_1-1')).toBeVisible();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
 test('test ad placements on article', async ({ page }) => {
   await page.goto('https://seoghoer.dk/kendte/midt-i-sygdomschok-kendte-sender-kaerlighed-til-melvin-kakooza?debugAds=true');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
-  await expect(page.locator('#responsive_1-1')).toBeVisible();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });

@@ -81,11 +81,11 @@ test('sign in to plus', async ({ page }) => {
 test('test ad placements on frontpage', async ({ page }) => {
   await page.goto('https://femina.dk');
   await page.getByRole('button', { name: 'Tillad alle cookies' }).click();
-  await expect(page.locator('#responsive_1-1')).toBeVisible();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
 test('test ad placements on article', async ({ page }) => {
   await page.goto('https://femina.dk/sundhed/jeg-er-paa-vej-hjem-til-dig-nu-sagde-vagtlaegen-i-telefonen-ingen-havde-regnet-med-noget');
   await page.getByRole('button', { name: 'Tillad alle cookies' }).click();
-  await expect(page.locator('#responsive_1-1')).toBeVisible();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });

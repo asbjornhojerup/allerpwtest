@@ -10,8 +10,7 @@
       .form-group { margin-bottom: 1.5rem; }
       label { display: block; font-weight: bold; margin-bottom: 0.5rem; color: #555; }
       select { width: 100%; padding: 0.75rem; font-size: 1rem; border: 1px solid #ddd; border-radius: 4px; }
-      select[multiple] { min-height: 100px; }
-      .checkbox-group { margin-bottom: 1.5rem; }
+.checkbox-group { margin-bottom: 1.5rem; }
       .checkbox-group label { display: inline-block; margin-right: 1rem; margin-bottom: 0.5rem; font-weight: normal; }
       .checkbox-group input[type="checkbox"] { margin-right: 0.5rem; }
       button { width: 100%; padding: 0.75rem; font-size: 1rem; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; letter-spacing: 0.05em; transition: background-color 0.2s; }
@@ -54,8 +53,8 @@
 
 <form method="post">
   <div class="form-group">
-    <label for="site">Sites (hold Ctrl/Cmd to select multiple)</label>
-    <select id="site" name="site" multiple required>
+    <label for="site">Site</label>
+    <select id="site" name="site" required>
       {% for site in sites %}
         <option value="{{site}}">{{site}}</option>
       {% endfor %}

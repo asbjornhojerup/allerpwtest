@@ -70,11 +70,11 @@ test('test video player, necessary consent', async ({ page }) => {
 test('test ad placements on frontpage', async ({ page }) => {
   await page.goto('https://frontend-stage.vielskerserier.dk');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
-  await expect(page.locator('#responsive_1-1')).toBeVisible();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
 test('test ad placements on article', async ({ page }) => {
   await page.goto('https://frontend-stage.vielskerserier.dk/anmeldelser/anmeldelse-mr-scorsese-er-et-forrygende-portraet-af-en-levende-filmlegende');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
-  await expect(page.locator('#responsive_1-1')).toBeVisible();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });

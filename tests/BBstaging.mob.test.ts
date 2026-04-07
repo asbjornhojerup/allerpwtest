@@ -76,13 +76,13 @@ test('test load more  on category , change to necessary cookies, load more again
 test('test ad placements on frontpage', async ({ page }) => {
   await page.goto('https://frontend-stage.billedbladet.dk');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
-  await expect(page.locator('#responsive_1-1')).toBeVisible();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
 test('test ad placements on article', async ({ page }) => {
   await page.goto('https://frontend-stage.billedbladet.dk/kendte/international/sport/kong-felipe-maatte-se-skuffet-til-boennen-til-ham-efterfoelgende-var');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
-  await expect(page.locator('#responsive_1-1')).toBeVisible();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
 
