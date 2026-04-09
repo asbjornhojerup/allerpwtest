@@ -100,7 +100,7 @@
               <div style="display:flex; justify-content:space-between;">
                 <span>{{ t.title }}</span>
                 <span class="badge {% if t.ok %}passed{% else %}failed{% endif %}">
-                  {% if t.ok %}✅ passed{% else %}❌ failed{% endif %}
+                  {% if t.ok %}passed{% else %}failed{% endif %}
                 </span>
               </div>
               {% if not t.ok and t.error %}

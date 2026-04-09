@@ -88,3 +88,9 @@ test('test ad placements on article', async ({ page }) => {
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
+test('test ad placements on frontpage with necessary cookies', async ({ page }) => {
+  await page.goto('https://udeoghjemme.dk');
+  await page.getByRole('button', { name: 'Use necessary cookies only' }).click();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
+});
+

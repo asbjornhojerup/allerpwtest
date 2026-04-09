@@ -70,11 +70,20 @@ test('test video player, necessary consent', async ({ page }) => {
 test('test ad placements on frontpage', async ({ page }) => {
   await page.goto('https://frontend-stage.isabellas.dk');
   await page.getByRole('button', { name: 'Tillad alle cookies' }).click();
+    {timeout: 30000}
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
 test('test ad placements on article', async ({ page }) => {
   await page.goto('https://frontend-stage.isabellas.dk/haven/blomster-planter/6-planter-der-kan-overleve-efteraaret-i-krukker-0');
   await page.getByRole('button', { name: 'Tillad alle cookies' }).click();
+    {timeout: 30000}
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
+});
+
+test('test ad placements on frontpage with necessary cookies', async ({ page }) => {
+  await page.goto('https://frontend-stage.isabellas.dk');
+  await page.getByRole('button', { name: 'Kun nødvendige cookies' }).click();
+    {timeout: 30000}
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });

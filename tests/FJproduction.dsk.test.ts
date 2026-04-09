@@ -77,9 +77,13 @@ test('test load more  on category , change to necessary cookies, load more again
 });
 
 test('test ad placements on frontpage', async ({ page }) => {
-  await page.goto('https://familiejournal.dk?debugAds=true');
+  await page.goto('https://familiejournal.dk');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
+        await page.evaluate(() => { 
+  window.scrollBy(500, 2500);
+});
+  await expect(page.locator('#responsive_2-1')).toBeEnabled();
 });
 
 test('test ad placements on article', async ({ page }) => {
@@ -89,4 +93,18 @@ test('test ad placements on article', async ({ page }) => {
   window.scrollBy(0, 500);
 });
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
+            await page.evaluate(() => { 
+  window.scrollBy(500, 2500);
+});
+  await expect(page.locator('#intext_ad_3-1')).toBeEnabled();
+});
+
+test('test ad placements on frontpage with necessary cookies', async ({ page }) => {
+  await page.goto('https://familiejournal.dk');
+  await page.getByRole('button', { name: 'Reject all' }).click();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
+        await page.evaluate(() => { 
+  window.scrollBy(500, 2500);
+});
+  await expect(page.locator('#responsive_2-1')).toBeEnabled();
 });

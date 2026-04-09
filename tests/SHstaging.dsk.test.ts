@@ -82,13 +82,19 @@ test('test load more  on category , change to necessary cookies, load more again
 });
 
 test('test ad placements on frontpage', async ({ page }) => {
-  await page.goto('https://frontend-stage.seoghoer.dk?debugAds=true');
+  await page.goto('https://frontend-stage.seoghoer.dk');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
 test('test ad placements on article', async ({ page }) => {
-  await page.goto('https://frontend-stage.seoghoer.dk/reality/paradise-hotel/voldsom-video-nadja-hansen-i-dramatisk-ormeulykke-paa-paradise-hotel?debugAds=true');
+  await page.goto('https://frontend-stage.seoghoer.dk/reality/paradise-hotel/voldsom-video-nadja-hansen-i-dramatisk-ormeulykke-paa-paradise-hotel');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
+});
+
+test('test ad placements on frontpage with necessary cookies', async ({ page }) => {
+  await page.goto('https://frontend-stage.seoghoer.dk');
+  await page.getByRole('button', { name: 'Use necessary cookies only' }).click();
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });

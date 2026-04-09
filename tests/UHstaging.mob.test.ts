@@ -86,3 +86,9 @@ await page.goto('https://frontend-stage.udeoghjemme.dk/skaebner/naar-livet-goer-
 await page.getByRole('button', { name: 'Allow all cookies' }).click();
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
+
+test('test ad placements on frontpage with necessary cookies', async ({ page }) => {
+  await page.goto('https://frontend-stage.udeoghjemme.dk');
+  await page.getByRole('button', { name: 'Use necessary cookies only' }).click();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
+});

@@ -85,7 +85,11 @@ test('test ad placements on article', async ({ page }) => {
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
 
-
+test('test ad placements on frontpage with necessary consent', async ({ page }) => {
+  await page.goto('https://frontend-stage.billedbladet.dk');
+  await page.getByRole('button', { name: 'Use necessary cookies only' }).click();
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
+});
 
 ///  await page.evaluate(() => { 
     //window.scrollBy(0, 2000);

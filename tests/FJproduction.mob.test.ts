@@ -86,5 +86,14 @@ test('test ad placements on frontpage', async ({ page }) => {
 test('test ad placements on article', async ({ page }) => {
   await page.goto('https://www.familiejournal.dk/livshistorier/artikler/til-konfirmationsforberedelse-fandt-alfred-ro-elsker-gaa-i-kirke');
   await page.getByRole('button', { name: 'Allow all cookies' }).click();
+        await page.evaluate(() => { 
+  window.scrollBy(0, 1000);
+});
+  await expect(page.locator('#responsive_1-1')).toBeEnabled();
+});
+
+test('test ad placements on frontpage with necessary cookies', async ({ page }) => {
+  await page.goto('https://familiejournal.dk?debugAds=true');
+  await page.getByRole('button', { name: 'Reject all' }).click();
   await expect(page.locator('#responsive_1-1')).toBeEnabled();
 });
